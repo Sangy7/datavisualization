@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualization Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #fff;
+        }
+
+        .chartContainer {
+            background-color: #333;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Data Visualization Dashboard</h1>
+
+    <div class="chartContainer" id="likelihoodChartContainer">
+        <h2>Likelihood</h2>
+        <canvas id="likelihoodChart" width="800" height="400"></canvas>
+    </div>
+
+    <div class="chartContainer" id="relevanceChartContainer">
+        <h2>Relevance</h2>
+        <canvas id="relevanceChart" width="800" height="400"></canvas>
+    </div>
+
+    <div class="chartContainer" id="yearChartContainer">
+        <h2>Year</h2>
+        <canvas id="yearChart" width="800" height="400"></canvas>
+    </div>
+
+    <div class="chartContainer" id="topicsChartContainer">
+        <h2>Topics</h2>
+        <canvas id="topicsChart" width="800" height="400"></canvas>
+    </div>
+
+    <div class="chartContainer" id="regionChartContainer">
+        <h2>Region</h2>
+        <canvas id="regionChart" width="800" height="400"></canvas>
+    </div>
+
+    <div class="chartContainer" id="cityChartContainer">
+        <h2>City</h2>
+        <canvas id="cityChart" width="800" height="400"></canvas>
+    </div>
+
+    <div class="chartContainer" id="countryChartContainer">
+        <h2>Country</h2>
+        <canvas id="countryChart" width="800" height="400"></canvas>
+    </div>
+
+    <script>
+        fetch('/api/data')
+            .then(response => response.json())
+            .then(data => {
+                const labels = data.map(entry => entry.country);
+
+                // Define metrics to be displayed
+                const metrics = ['Likelihood', 'Relevance', 'Year', 'Topics', 'Region', 'City', 'Country'];
+
+                // Create a chart for each metric
+                metrics.forEach(metric => {
+                    const metricData = data.map(entry => entry[metric.toLowerCase()]);
+
+                    var ctx = document.getElementById(`${metric.toLowerCase()}Chart`).getContext('2d');
+                    var metricChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: metric,
+                                data: metricData,
+                                backgroundColor: getRandomColor(),
+                                borderColor: getRandomColor(),
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: {
+                                        display: false
+                                    }
+                                },
+                                x: {
+                                    grid: {
+                                        display: false
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            }
+                        }
+                    });
+                });
+            });
+
+        // Function to generate a random color for dataset
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+    </script>
+</body>
+</html>
